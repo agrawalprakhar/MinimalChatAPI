@@ -7,10 +7,10 @@ namespace MinimalChatApplication.Models
     {
         [Key]
         public int Id { get; set; }
-        [ForeignKey("Sender")]
+      //  [ForeignKey("Sender")]
         [Required]
         public int SenderId { get; set; }
-        [ForeignKey("Receiver")]
+       // [ForeignKey("Receiver")]
         [Required]
         public int ReceiverId { get; set; }
         [Required]
@@ -19,8 +19,8 @@ namespace MinimalChatApplication.Models
         
         
         // Navigation properties
-        public User Sender { get; set; }
-        public User Receiver { get; set; }
+        //public User Sender { get; set; }
+        //public User Receiver { get; set; }
 
 
     }

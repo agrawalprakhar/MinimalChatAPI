@@ -28,7 +28,7 @@ namespace MinimalChatApplication.Controllers
 
         
 
-        // PUT: api/Messages/5
+    
        
       
 
@@ -71,6 +71,45 @@ namespace MinimalChatApplication.Controllers
             return Ok(response);
         }
 
+        [HttpPut("{messageId}")]
+        public async Task<IActionResult> EditMessage(int messageId, [FromBody] EditMessage editMessage)
+        {
+            //var currentUser = HttpContext.User;
+            var userId = GetCurrentUserId();
+            // var currentUserId = Convert.ToInt32(currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            if (userId == -1)
+            {
+                return Unauthorized(new { message = "Unauthorized access" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { message = "invalid request parameter." });
+            }
+
+            var existingMessage = await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId && (m.SenderId == userId || m.ReceiverId == userId));
+
+            //Console.WriteLine(existingMessage);
+
+            if (existingMessage == null)
+            {
+                return NotFound(new { error = "Message not found." });
+            }
+
+
+
+            // Update the message content
+            existingMessage.Content = editMessage.Content;
+            existingMessage.Timestamp = DateTime.Now;
+
+            // Save the changes to the database
+            await _context.SaveChangesAsync();
+
+            // Return 200 OK with a success message
+            return Ok(new { message = "Message edited successfully" });
+
+        }
 
         // DELETE: api/Messages/5
         [HttpDelete("/api/messages/{messageId}")]

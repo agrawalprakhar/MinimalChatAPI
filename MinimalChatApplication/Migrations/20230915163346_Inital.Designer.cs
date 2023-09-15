@@ -12,15 +12,15 @@ using MinimalChatApplication.Data;
 namespace MinimalChatApplication.Migrations
 {
     [DbContext(typeof(MinimalChatContext))]
-    [Migration("20230915130352_Initial")]
-    partial class Initial
+    [Migration("20230915163346_Inital")]
+    partial class Inital
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

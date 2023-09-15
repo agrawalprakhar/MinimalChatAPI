@@ -23,7 +23,7 @@ namespace MinimalChatApplication.Controllers
     public class UsersController : ControllerBase
     {
         private readonly MinimalChatContext _context;
-        IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         public UsersController(MinimalChatContext context, IConfiguration configuration)
         {
@@ -34,8 +34,6 @@ namespace MinimalChatApplication.Controllers
         // GET: api/Users
         [HttpGet]
         [Authorize]
-       
-
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
             var currentUser = HttpContext.User;
@@ -49,17 +47,17 @@ namespace MinimalChatApplication.Controllers
                 return Unauthorized(new { message = "Unauthorized access" });
             }
             var users = await _context.Users.Where(u => u.Id != Convert.ToInt32(userId))
-                .Select(u => new User
+                .Select(u => new 
                 {
                     Id = u.Id,
                     Name = u.Name,
                     Email = u.Email,
-                    Password = u.Password
+               
 
                 })
                 .ToListAsync();
 
-            return Ok(users);
+            return Ok(new {users=users});
         }
     
     
@@ -113,7 +111,12 @@ namespace MinimalChatApplication.Controllers
             await _context.SaveChangesAsync();
 
             // Return the success response with the user information
-            return Ok(user);
+            return Ok(new
+            {
+                userId = user.Id,
+                name = user.Name,
+                email = user.Email
+            });
         }
 
 
@@ -152,7 +155,7 @@ namespace MinimalChatApplication.Controllers
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(loginData.Password, user.Password))
             {
-                return Unauthorized(new { error = "Incorrect email or password." });
+                return Unauthorized(new { error = "Login Failed Due to Wrong Credential" });
             }
 
             // Login successful, generate JWT token and return user profile
@@ -162,7 +165,17 @@ namespace MinimalChatApplication.Controllers
             user.Token = token;
             await _context.SaveChangesAsync();
 
-            return Ok(user);
+            // Return the success response with the user information
+            return Ok(new
+            {
+                 token,
+                profile = new
+                {
+                    id = user.Id,
+                    name = user.Name,
+                    email = user.Email
+                }
+            });
         }
         private int GetUserId(HttpContext context)
         {

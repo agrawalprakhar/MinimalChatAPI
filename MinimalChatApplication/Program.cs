@@ -45,7 +45,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters()
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens. TokenValidationParameters()
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -89,8 +89,8 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 app.UseCors();
 app.MapControllers();
 
