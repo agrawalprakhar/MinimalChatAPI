@@ -12746,19 +12746,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\pranj\\.nuget\\packages\\": {}
+    "C:\\Users\\admin\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\pranj\\OneDrive\\Documents\\Desktop\\MinimalChatAPI\\MinimalChatApplication\\MinimalChatApplication.csproj",
+      "projectUniqueName": "C:\\Users\\admin\\Desktop\\MinimalChatAPI\\MinimalChatApplication\\MinimalChatApplication.csproj",
       "projectName": "MinimalChatApplication",
-      "projectPath": "C:\\Users\\pranj\\OneDrive\\Documents\\Desktop\\MinimalChatAPI\\MinimalChatApplication\\MinimalChatApplication.csproj",
-      "packagesPath": "C:\\Users\\pranj\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\pranj\\OneDrive\\Documents\\Desktop\\MinimalChatAPI\\MinimalChatApplication\\obj\\",
+      "projectPath": "C:\\Users\\admin\\Desktop\\MinimalChatAPI\\MinimalChatApplication\\MinimalChatApplication.csproj",
+      "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\admin\\Desktop\\MinimalChatAPI\\MinimalChatApplication\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\pranj\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

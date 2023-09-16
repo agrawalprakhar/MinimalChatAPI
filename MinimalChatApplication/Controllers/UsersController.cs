@@ -32,7 +32,7 @@ namespace MinimalChatApplication.Controllers
         }
 
         // GET: api/Users
-        [HttpGet]
+        [HttpGet("/api/users")]
         [Authorize]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
@@ -60,28 +60,6 @@ namespace MinimalChatApplication.Controllers
             return Ok(new {users=users});
         }
     
-    
-
-        //// GET: api/Users/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<User>> GetUser(int id)
-        //{
-        //    if (_context.Users == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var user = await _context.Users.FindAsync(id);
-
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return user;
-        //}
-
-       
-
 
         // POST: api/register
         [HttpPost("/api/register")]
@@ -117,15 +95,6 @@ namespace MinimalChatApplication.Controllers
                 name = user.Name,
                 email = user.Email
             });
-        }
-
-
-
-       
-
-        private bool UserExists(int id)
-        {
-            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         // Hash the password using a suitable hashing algorithm (e.g., bcrypt)
@@ -195,7 +164,8 @@ namespace MinimalChatApplication.Controllers
         private string GenerateJwtToken(User user)
         {
             var authClaims = new List<Claim>
-                {
+                { 
+                    new Claim(ClaimTypes.Name,user.Name),
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };

@@ -12,8 +12,8 @@ using MinimalChatApplication.Data;
 namespace MinimalChatApplication.Migrations
 {
     [DbContext(typeof(MinimalChatContext))]
-    [Migration("20230915163346_Inital")]
-    partial class Inital
+    [Migration("20230916110757_LogAdded")]
+    partial class LogAdded
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,31 @@ namespace MinimalChatApplication.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("MinimalChatApplication.Models.Logs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IP")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestBody")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Log", (string)null);
+                });
 
             modelBuilder.Entity("MinimalChatApplication.Models.Message", b =>
                 {
@@ -47,10 +72,6 @@ namespace MinimalChatApplication.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
 
                     b.ToTable("Message", (string)null);
                 });
@@ -84,25 +105,6 @@ namespace MinimalChatApplication.Migrations
                         .IsUnique();
 
                     b.ToTable("User", (string)null);
-                });
-
-            modelBuilder.Entity("MinimalChatApplication.Models.Message", b =>
-                {
-                    b.HasOne("MinimalChatApplication.Models.User", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("MinimalChatApplication.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
                 });
 #pragma warning restore 612, 618
         }

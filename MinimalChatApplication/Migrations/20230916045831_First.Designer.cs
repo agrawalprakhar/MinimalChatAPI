@@ -12,8 +12,8 @@ using MinimalChatApplication.Data;
 namespace MinimalChatApplication.Migrations
 {
     [DbContext(typeof(MinimalChatContext))]
-    [Migration("20230915180928_2")]
-    partial class _2
+    [Migration("20230916045831_First")]
+    partial class First
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

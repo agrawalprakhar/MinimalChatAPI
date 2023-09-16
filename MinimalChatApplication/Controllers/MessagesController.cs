@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Data;
 using MinimalChatApplication.Models;
+using static MinimalChatApplication.Models.ConversationResponse;
 
 namespace MinimalChatApplication.Controllers
 {
@@ -24,13 +27,32 @@ namespace MinimalChatApplication.Controllers
             _context = context;
         }
 
-       
 
-        
-
-    
+        [HttpGet("/api/messages")]
        
-      
+        public IActionResult GetConversationHistory([FromQuery] ConversationRequest request)
+        {
+            // Get the authenticated user's ID from the JWT token
+
+            var userId = GetCurrentUserId();
+            var messages = _context.Messages
+                .Where(m => (m.SenderId == userId || m.ReceiverId == userId) &&
+                            (!request.Before.HasValue || m.Timestamp < request.Before))
+                .OrderBy(m => request.Sort == "asc" ? m.Timestamp : (DateTime?)null)
+                .Take(request.Count)
+                .Select(m => new
+                {
+                    id = m.Id,
+                    senderId = m.SenderId,
+                    receiverId = m.ReceiverId,
+                    content = m.Content,
+                    timestamp = m.Timestamp
+                })
+                .ToList();
+
+            return Ok(new { messages });
+        }
+
 
         [HttpPost("/api/messages")]
         public async Task<ActionResult<sendMessageResponse>> sendMessages(sendMessageRequest request)
@@ -71,7 +93,7 @@ namespace MinimalChatApplication.Controllers
             return Ok(response);
         }
 
-        [HttpPut("{messageId}")]
+        [HttpPut("/api/messages/{messageId}")]
         public async Task<IActionResult> EditMessage(int messageId, [FromBody] EditMessage editMessage)
         {
             //var currentUser = HttpContext.User;
@@ -94,20 +116,42 @@ namespace MinimalChatApplication.Controllers
 
             if (existingMessage == null)
             {
+                // Check if the message exists but was sent by another user
+                var messageExists = await _context.Messages.AnyAsync(m => m.Id == messageId);
+                if (messageExists)
+                {
+                    return Unauthorized(new { message = "You are not allowed to edit messages sent by other users" });
+                }
                 return NotFound(new { error = "Message not found." });
             }
-
+            // Validate the request content
+            if (string.IsNullOrWhiteSpace(editMessage.Content))
+            {
+                return BadRequest(new { error = "Message content is required" });
+            }
 
 
             // Update the message content
             existingMessage.Content = editMessage.Content;
-            existingMessage.Timestamp = DateTime.Now;
+            existingMessage.Timestamp = DateTime.Now; 
 
             // Save the changes to the database
             await _context.SaveChangesAsync();
 
             // Return 200 OK with a success message
-            return Ok(new { message = "Message edited successfully" });
+            return Ok(new
+            {
+                success = true,
+                message = "Message edited successfully",
+                editedMessage = new
+                {
+                    messageId = existingMessage.Id,
+                    senderId = existingMessage.SenderId,
+                    receiverId = existingMessage.ReceiverId,
+                    content = existingMessage.Content,
+                    timestamp = existingMessage.Timestamp
+                }
+            });
 
         }
 
@@ -127,6 +171,12 @@ namespace MinimalChatApplication.Controllers
 
             if (message == null)
             {
+                // Check if the message exists but was sent by another user
+                var messageExists = await _context.Messages.AnyAsync(m => m.Id == messageId);
+                if (messageExists)
+                {
+                    return Unauthorized(new { message = "You are not allowed to Delete messages sent by other users" });
+                }
                 return NotFound(new { message = "Message not found" });
             }
 
@@ -135,12 +185,6 @@ namespace MinimalChatApplication.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Message deleted successfully" });
-        }
-
-
-        private bool MessageExists(int id)
-        {
-            return _context.Messages.Any(e => e.Id == id);
         }
 
         private int GetCurrentUserId()
