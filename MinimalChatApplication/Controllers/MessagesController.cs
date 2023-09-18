@@ -57,7 +57,7 @@ namespace MinimalChatApplication.Controllers
                 {
                     request.Before = DateTime.Now;
                 }
-                if (request.Count <= 0)
+                if (request.Count <0)
                 {
                     request.Count = 20; // Default count
                 }
@@ -72,8 +72,9 @@ namespace MinimalChatApplication.Controllers
                 //                 (!request.Before.HasValue || m.Timestamp < request.Before));
 
                  var query = _context.Messages
-                .Where(m => (m.SenderId == currentuserId && m.ReceiverId == request.UserId)
-                            || (m.SenderId == request.UserId && m.ReceiverId == currentuserId)
+                .Where(m => ((m.SenderId == currentuserId && m.ReceiverId == request.UserId)
+                            || (m.SenderId == request.UserId && m.ReceiverId == currentuserId)) &&
+                               (!request.Before.HasValue || m.Timestamp < request.Before)
                             )
                 .AsQueryable();
 

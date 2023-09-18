@@ -12,8 +12,8 @@ using MinimalChatApplication.Data;
 namespace MinimalChatApplication.Migrations
 {
     [DbContext(typeof(MinimalChatContext))]
-    [Migration("20230916110757_LogAdded")]
-    partial class LogAdded
+    [Migration("20230918162648_Final")]
+    partial class Final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,6 +73,10 @@ namespace MinimalChatApplication.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
                     b.ToTable("Message", (string)null);
                 });
 
@@ -105,6 +109,25 @@ namespace MinimalChatApplication.Migrations
                         .IsUnique();
 
                     b.ToTable("User", (string)null);
+                });
+
+            modelBuilder.Entity("MinimalChatApplication.Models.Message", b =>
+                {
+                    b.HasOne("MinimalChatApplication.Models.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("MinimalChatApplication.Models.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
                 });
 #pragma warning restore 612, 618
         }
