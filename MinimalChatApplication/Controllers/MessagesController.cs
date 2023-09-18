@@ -33,25 +33,7 @@ namespace MinimalChatApplication.Controllers
 
         public async Task<IActionResult> GetConversationHistory([FromQuery] ConversationRequest request)
         {
-            // Get the authenticated user's ID from the JWT token
-
-            //var userId = GetCurrentUserId();
-            //var messages = _context.Messages
-            //    .Where(m => (m.SenderId == userId || m.ReceiverId == userId) &&
-            //                (!request.Before.HasValue || m.Timestamp < request.Before))
-            //    .OrderBy(m => request.Sort == "asc" ? m.Timestamp : (DateTime?)null)
-            //    .Take(request.Count)
-            //    .Select(m => new
-            //    {
-            //        id = m.Id,
-            //        senderId = m.SenderId,
-            //        receiverId = m.ReceiverId,
-            //        content = m.Content,
-            //        timestamp = m.Timestamp
-            //    })
-            //    .ToList();
-
-            //return Ok(new { messages });
+            
             try
             {
                 // Get the authenticated user's ID from the JWT token
@@ -63,10 +45,11 @@ namespace MinimalChatApplication.Controllers
                     return Unauthorized(); // Unauthorized access
                 }
 
+                
                 // Validate request parameters
-                if (request.UserId == null || request.UserId != currentuserId)
+                if (request.UserId == null )
                 {
-                    return NotFound("User not found"); // User not found
+                    return NotFound(new { error = "Receiver user not found" });
                 }
 
                 // Set default values for optional parameters
@@ -84,9 +67,15 @@ namespace MinimalChatApplication.Controllers
                 }
 
                 // Fetch conversation history based on request parameters asynchronously
-                var query =  _context.Messages
-                    .Where(m => (m.SenderId == currentuserId || m.ReceiverId == currentuserId) &&
-                                 (!request.Before.HasValue || m.Timestamp < request.Before));
+                //var query =  _context.Messages
+                //    .Where(m => (m.SenderId == currentuserId || m.ReceiverId == currentuserId) &&
+                //                 (!request.Before.HasValue || m.Timestamp < request.Before));
+
+                 var query = _context.Messages
+                .Where(m => (m.SenderId == currentuserId && m.ReceiverId == request.UserId)
+                            || (m.SenderId == request.UserId && m.ReceiverId == currentuserId)
+                            )
+                .AsQueryable();
 
                 if (request.Sort == "asc")
                 {
