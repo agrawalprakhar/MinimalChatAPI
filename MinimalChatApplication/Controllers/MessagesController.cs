@@ -11,7 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Data;
 using MinimalChatApplication.Models;
-using static MinimalChatApplication.Models.ConversationResponse;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 namespace MinimalChatApplication.Controllers
 {
@@ -29,33 +30,100 @@ namespace MinimalChatApplication.Controllers
 
 
         [HttpGet("/api/messages")]
-       
-        public IActionResult GetConversationHistory([FromQuery] ConversationRequest request)
+
+        public async Task<IActionResult> GetConversationHistory([FromQuery] ConversationRequest request)
         {
             // Get the authenticated user's ID from the JWT token
 
-            var userId = GetCurrentUserId();
-            var messages = _context.Messages
-                .Where(m => (m.SenderId == userId || m.ReceiverId == userId) &&
-                            (!request.Before.HasValue || m.Timestamp < request.Before))
-                .OrderBy(m => request.Sort == "asc" ? m.Timestamp : (DateTime?)null)
-                .Take(request.Count)
-                .Select(m => new
-                {
-                    id = m.Id,
-                    senderId = m.SenderId,
-                    receiverId = m.ReceiverId,
-                    content = m.Content,
-                    timestamp = m.Timestamp
-                })
-                .ToList();
+            //var userId = GetCurrentUserId();
+            //var messages = _context.Messages
+            //    .Where(m => (m.SenderId == userId || m.ReceiverId == userId) &&
+            //                (!request.Before.HasValue || m.Timestamp < request.Before))
+            //    .OrderBy(m => request.Sort == "asc" ? m.Timestamp : (DateTime?)null)
+            //    .Take(request.Count)
+            //    .Select(m => new
+            //    {
+            //        id = m.Id,
+            //        senderId = m.SenderId,
+            //        receiverId = m.ReceiverId,
+            //        content = m.Content,
+            //        timestamp = m.Timestamp
+            //    })
+            //    .ToList();
 
-            return Ok(new { messages });
+            //return Ok(new { messages });
+            try
+            {
+                // Get the authenticated user's ID from the JWT token
+                var currentuserId = GetCurrentUserId();
+
+                // Validate userId
+                if (currentuserId == null)
+                {
+                    return Unauthorized(); // Unauthorized access
+                }
+
+                // Validate request parameters
+                if (request.UserId == null || request.UserId != currentuserId)
+                {
+                    return NotFound("User not found"); // User not found
+                }
+
+                // Set default values for optional parameters
+                if (!request.Before.HasValue)
+                {
+                    request.Before = DateTime.Now;
+                }
+                if (request.Count <= 0)
+                {
+                    request.Count = 20; // Default count
+                }
+                if (string.IsNullOrEmpty(request.Sort))
+                {
+                    request.Sort = "asc"; // Default sorting order
+                }
+
+                // Fetch conversation history based on request parameters asynchronously
+                var query =  _context.Messages
+                    .Where(m => (m.SenderId == currentuserId || m.ReceiverId == currentuserId) &&
+                                 (!request.Before.HasValue || m.Timestamp < request.Before));
+
+                if (request.Sort == "asc")
+                {
+                    query = query.OrderBy(m => m.Timestamp);
+                }
+                else if (request.Sort == "desc")
+                {
+                    query = query.OrderByDescending(m => m.Timestamp);
+                }
+                var messages = await query
+                .Take(request.Count)
+                    .Select(m => new
+                    {
+                        id = m.Id,
+                        senderId = m.SenderId,
+                        receiverId = m.ReceiverId,
+                        content = m.Content,
+                        timestamp = m.Timestamp
+                    })
+                    .ToListAsync();
+
+                if (messages.Count == 0)
+                {
+                    return NotFound("Conversation not found"); // Conversation not found
+                }
+
+                return Ok(new { messages }); // Successful response
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Bad Request: {ex.Message}"); // Invalid request parameters
+            }
         }
 
 
         [HttpPost("/api/messages")]
-        public async Task<ActionResult<sendMessageResponse>> sendMessages(sendMessageRequest request)
+        public async Task<ActionResult<SendMessageResponse>> SendMessages(sendMessageRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -81,7 +149,7 @@ namespace MinimalChatApplication.Controllers
 
 
             // Return a SendMessageResponse with the relevant message data
-            var response = new sendMessageResponse
+            var response = new SendMessageResponse
             {
                 MessageId = message.Id,
                 SenderId = message.SenderId,

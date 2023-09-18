@@ -20,17 +20,17 @@ namespace MinimalChatApplication.Data
             modelBuilder.Entity<Logs>().ToTable("Log");
 
 
-            //modelBuilder.Entity<Message>()
-            //   .HasOne(m => m.Receiver)
-            //   .WithMany()
-            //   .HasForeignKey(m => m.ReceiverId)
-            //   .OnDelete(DeleteBehavior.NoAction);
-            ////configure sender
-            //modelBuilder.Entity<Message>()
-            //  .HasOne(m => m.Sender)
-            //  .WithMany()
-            //  .HasForeignKey(m => m.SenderId)
-            //  .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Message>()
+               .HasOne(m => m.Receiver)
+               .WithMany()
+               .HasForeignKey(m => m.ReceiverId)
+               .OnDelete(DeleteBehavior.NoAction);
+            //configure sender
+            modelBuilder.Entity<Message>()
+              .HasOne(m => m.Sender)
+              .WithMany()
+              .HasForeignKey(m => m.SenderId)
+              .OnDelete(DeleteBehavior.NoAction);
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Message> Messages { get; set; }

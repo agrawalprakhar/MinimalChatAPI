@@ -1,6 +1,6 @@
 ﻿namespace MinimalChatApplication.Models
 {
-    public class sendMessageResponse
+    public class SendMessageResponse
     {
         public int MessageId { get; set; }
         public int SenderId { get; set; }

@@ -39,7 +39,7 @@ namespace MinimalChatApplication.Controllers
 
             logs.ForEach(l =>
             {
-                string cleanedString = l.RequestBody.Replace("\r\n", "").Replace(" ", "").Replace("\\", "");
+                string cleanedString = l.RequestBody.Replace("\r\n", "").Replace(" ", "").Replace("\\", "").Replace("\n","");
                 Console.WriteLine(cleanedString);
                 l.RequestBody = cleanedString;
             });
