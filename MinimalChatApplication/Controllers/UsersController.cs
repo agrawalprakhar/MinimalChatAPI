@@ -34,7 +34,7 @@ namespace MinimalChatApplication.Controllers
         // GET: api/Users
         [HttpGet("/api/users")]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<List<User>>> GetUser()
         {
             var currentUser = HttpContext.User;
             var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -57,7 +57,7 @@ namespace MinimalChatApplication.Controllers
                 })
                 .ToListAsync();
 
-            return Ok(new {users=users});
+            return Ok(users);
         }
     
 

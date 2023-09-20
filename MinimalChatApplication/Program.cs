@@ -15,11 +15,11 @@ builder.Services.AddScoped<RequestLoggingMiddleware>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
+    options.AddPolicy("AllowLocalhost4200", builder =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        builder.WithOrigins("http://localhost:4200") // Allow requests from this origin
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
@@ -92,7 +92,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors();
+app.UseCors("AllowLocalhost4200");
 app.MapControllers();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
