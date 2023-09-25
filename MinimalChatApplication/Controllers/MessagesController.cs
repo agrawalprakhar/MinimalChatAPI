@@ -191,7 +191,7 @@ namespace MinimalChatApplication.Controllers
 
             // Update the message content
             existingMessage.Content = editMessage.Content;
-            existingMessage.Timestamp = DateTime.Now; 
+            //existingMessage.Timestamp = DateTime.Now; 
 
             // Save the changes to the database
             await _context.SaveChangesAsync();

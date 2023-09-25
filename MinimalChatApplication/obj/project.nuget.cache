@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "FLb8vCdHwJwfd/HLqTA0XHAumDKANv+mNg7/cx2RQ6pAnxLKbnnzx1STfya6pmWLrPZ0ZBmzq2o424Ie5P5ueA==",
+  "dgSpecHash": "ARcDtx9arXCg0E9MQPAahDCGLGklLYRWPntizjvyuvCLvSJfXo3V0l20xUlwqk4S20twzktPxTmuLoy3cbr4gg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\admin\\Documents\\MinimalChatAPI\\MinimalChatApplication\\MinimalChatApplication.csproj",
+  "projectFilePath": "C:\\Users\\admin\\Desktop\\Chat\\MinimalChatAPI\\MinimalChatApplication\\MinimalChatApplication.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\admin\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\admin\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
